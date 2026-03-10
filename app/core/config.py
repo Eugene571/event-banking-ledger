@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     app_port: int = 8000
     app_reload: bool = True
 
-    database_url: str = "postgresql+psycopg://ledger_user:secret123@localhost:5433/ledger_dev"
+    database_url: str = "postgresql+asyncpg://ledger_user:secret123@localhost:5433/ledger_dev"
 
     model_config = SettingsConfigDict(
         env_file=".env",

@@ -1,5 +1,3 @@
-# version: '3.9'
-
 services:
   db:
     image: postgres:16-alpine
@@ -17,5 +15,22 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  api:
+    build:
+      context: ..              # ВАЖНО: Поднимаемся в корень проекта (там, где папка app)
+      dockerfile: docker/Dockerfile  # Указываем путь к Dockerfile относительно корня
+    # command можно оставить здесь или в Dockerfile
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ..:/app                # ВАЖНО: Монтируем корень проекта в папку /app контейнера
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://ledger_user:secret123@db:5432/ledger_dev
+
 volumes:
   postgres_data:

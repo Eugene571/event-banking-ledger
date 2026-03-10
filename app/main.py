@@ -1,5 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import settings
+from app.infrastructure.database import get_db
 
 app = FastAPI(
     title="Event Banking Ledger",
@@ -11,6 +14,13 @@ app = FastAPI(
 )
 
 print(f"Запускаюсь на  http://{settings.app_host}:{settings.app_port}")
+
+
+@app.get("/test-db")
+async def test_db(db: AsyncSession = Depends(get_db)):
+    result = await db.execute(text("SELECT version();"))
+    version = result.scalar()
+    return {"status": "ok", "postgres_version": version}
 
 
 @app.get("/health")
